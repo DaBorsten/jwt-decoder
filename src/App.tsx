@@ -9,7 +9,7 @@ export function App() {
   return (
     <>
       <Toaster position="top-center" richColors closeButton />
-      <div className="container mx-auto p-8">
+      <div className="w-screen h-screen min-h-screen">
         <JWTDecoder />
       </div>
     </>

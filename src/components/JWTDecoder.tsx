@@ -52,16 +52,16 @@ function parseJWT(token: string) {
 function tooltipTextForKey(key: string): string | undefined {
   // Add more key descriptions as needed
   const descriptions: Record<string, string> = {
-    alg: "Algorithm used to sign the token",
+    alg: "Signature or encryption algorithm",
     typ: "Type of the token (usually 'JWT')",
     kid: "Key ID used to sign the token",
-    iss: "Issuer - who created and signed the token",
-    sub: "Subject - whom the token refers to",
-    aud: "Audience - intended recipient(s)",
+    iss: "Issuer (who created and signed this token)",
+    sub: "Subject (whom the token refers to)",
+    aud: "Audience (who or what the token is intended for)",
     exp: "Expiration time (seconds since epoch)",
     nbf: "Not valid before (seconds since epoch)",
-    iat: "Issued at (seconds since epoch)",
-    jti: "JWT ID - unique identifier for the token",
+    iat: "Issued at (seconds since Unix epoch)",
+    jti: "JWT ID (unique identifier for this token)",
     // Add more as needed
   };
   return descriptions[key];
@@ -89,85 +89,45 @@ const JWTDecoder: React.FC = () => {
   }, [input]);
 
   return (
-    <div
-      style={{
-        padding: 28,
-        borderRadius: 16,
-        boxShadow: "0 4px 32px #0003, 0 1.5px 8px #2222",
-        background: "linear-gradient(135deg, #23272f 0%, #2d3748 100%)",
-        display: "flex",
-        gap: 32,
-        alignItems: "flex-start",
-        flexWrap: "wrap",
-      }}
-    >
-      <div style={{ flex: 1, minWidth: 260 }}>
-        <h2
-          style={{
-            color: "#fff",
-            letterSpacing: 1,
-            fontWeight: 700,
-            fontSize: 26,
-            marginBottom: 8,
-          }}
-        >
+    <div className="w-full min-h-screen flex items-center justify-center bg-background dark px-2 py-8">
+      <div className="w-full max-w-2xl bg-card rounded-2xl shadow-2xl p-8 flex flex-col gap-8 border border-border">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-wide mb-2 text-center">
           JWT Decoder
         </h2>
-        <div style={{ marginBottom: 24 }}>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            rows={15}
-            placeholder="JWT Token hier eingeben..."
-            style={{
-              width: "100%",
-              minHeight: 180,
-              fontFamily: "monospace",
-              fontSize: 16,
-              boxShadow: "0 1px 4px #0002",
-              resize: "vertical",
-            }}
-          />
-        </div>
-        {error && (
-          <div style={{ color: "#f87171", marginBottom: 16, fontWeight: 600 }}>
-            <b>Fehler:</b> {error}
-          </div>
-        )}
-      </div>
-      <div style={{ flex: 1.2, minWidth: 300 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          {/* Decoded Header Section */}
-          <section
-            style={{
-              background: "linear-gradient(120deg, #23272f 60%, #374151 100%)",
-              borderRadius: 10,
-              padding: 18,
-              boxShadow: "0 2px 12px #0004, 0 1px 2px #2222",
-              position: "relative",
-              border: "1.5px solid #374151",
-            }}
+        <div className="flex flex-col gap-4">
+          <label
+            htmlFor="jwt-input"
+            className="text-base font-semibold text-primary mb-1"
           >
-            <h3
-              style={{
-                fontSize: 18,
-                fontWeight: 700,
-                margin: 0,
-                color: "#a5b4fc",
-                letterSpacing: 0.5,
-              }}
-            >
+            JWT Token
+          </label>
+          <div>
+            <textarea
+              id="jwt-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows={8}
+              placeholder="JWT Token hier eingeben..."
+              className="w-full min-h-[120px] bg-background border-2 border-dashed border-border rounded-lg p-4 text-base text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary transition resize-vertical"
+              style={{ boxShadow: "0 1px 4px #0002" }}
+            />
+          </div>
+          {error && (
+            <div className="text-destructive font-semibold mt-2">
+              <b>Fehler:</b> {error}
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col gap-6">
+          {/* Decoded Header Section */}
+          <section className="relative bg-muted border border-border rounded-xl p-6 shadow-md">
+            <h3 className="text-lg font-bold text-primary mb-2">
               Decoded Header
             </h3>
             <Button
               variant="ghost"
               size="sm"
-              style={{
-                position: "absolute",
-                top: 16,
-                right: 16,
-                cursor: "pointer",
-              }}
+              className="absolute top-4 right-4"
               onClick={() => {
                 navigator.clipboard.writeText(
                   result ? JSON.stringify(result.header, null, 2) : "",
@@ -177,58 +137,25 @@ const JWTDecoder: React.FC = () => {
             >
               Copy
             </Button>
-            <pre style={{ background: "none", color: "inherit", margin: 0, padding: 0, fontSize: 15, fontFamily: 'monospace', border: 0, marginTop: 24 }}>
-              {result && result.header
-                ? Object.entries(result.header).map(([key, value]) => (
-                    <div key={key} style={{ display: "flex", gap: 8 }}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span style={{ color: "#a5b4fc", fontWeight: 600, cursor: tooltipTextForKey(key) ? "help" : "default" }}>
-                            {key}
-                          </span>
-                        </TooltipTrigger>
-                        {tooltipTextForKey(key) && (
-                          <TooltipContent>{tooltipTextForKey(key)}</TooltipContent>
-                        )}
-                      </Tooltip>
-                      <span style={{ color: "#e0e7ef" }}>: {JSON.stringify(value)}</span>
-                    </div>
-                  ))
-                : <span style={{ color: "#444" }}></span>}
-            </pre>
+            <div className="bg-background rounded-lg p-3 mt-4 overflow-x-auto text-[15px] font-mono border border-border">
+              {result && result.header ? (
+                <JsonWithTooltips
+                  data={result.header}
+                  colorKey="text-blue-400"
+                />
+              ) : (
+                <span className="text-muted-foreground"> </span>
+              )}
+            </div>
           </section>
 
           {/* Decoded Payload Section */}
-          <section
-            style={{
-              background: "linear-gradient(120deg, #23272f 60%, #334155 100%)",
-              borderRadius: 10,
-              padding: 18,
-              boxShadow: "0 2px 12px #0004, 0 1px 2px #2222",
-              position: "relative",
-              border: "1.5px solid #334155",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: 18,
-                fontWeight: 700,
-                margin: 0,
-                color: "#67e8f9",
-                letterSpacing: 0.5,
-              }}
-            >
-              Decoded Payload
-            </h3>
+          <section className="relative bg-muted border border-border rounded-xl p-6 shadow-md">
+            <h3 className="text-lg font-bold mb-2">Decoded Payload</h3>
             <Button
               variant="ghost"
               size="sm"
-              style={{
-                position: "absolute",
-                top: 16,
-                right: 16,
-                cursor: "pointer",
-              }}
+              className="absolute top-4 right-4"
               onClick={() => {
                 navigator.clipboard.writeText(
                   result ? JSON.stringify(result.payload, null, 2) : "",
@@ -238,61 +165,30 @@ const JWTDecoder: React.FC = () => {
             >
               Copy
             </Button>
-            <pre style={{ background: "none", color: "inherit", margin: 0, padding: 0, fontSize: 15, fontFamily: 'monospace', border: 0, marginTop: 24 }}>
-              {result && result.payload
-                ? Object.entries(result.payload).map(([key, value]) => (
-                    <div key={key} style={{ display: "flex", gap: 8 }}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span style={{ color: "#67e8f9", fontWeight: 600, cursor: tooltipTextForKey(key) ? "help" : "default" }}>
-                            {key}
-                          </span>
-                        </TooltipTrigger>
-                        {tooltipTextForKey(key) && (
-                          <TooltipContent>{tooltipTextForKey(key)}</TooltipContent>
-                        )}
-                      </Tooltip>
-                      <span style={{ color: "#e0e7ef" }}>: {JSON.stringify(value)}</span>
-                    </div>
-                  ))
-                : <span style={{ color: "#444" }}></span>}
-            </pre>
+            <div className="bg-background rounded-lg p-3 mt-4 overflow-x-auto text-[15px] font-mono border border-border">
+              {result && result.payload ? (
+                <JsonWithTooltips
+                  data={result.payload}
+                  colorKey="text-blue-400"
+                />
+              ) : (
+                <span className="text-muted-foreground"> </span>
+              )}
+            </div>
           </section>
 
-
-
           {/* JWT Signature Verification (Optional) Section */}
-          <section
-            style={{
-              background: "linear-gradient(120deg, #23272f 60%, #475569 100%)",
-              borderRadius: 10,
-              padding: 18,
-              boxShadow: "0 2px 12px #0004, 0 1px 2px #2222",
-              position: "relative",
-              border: "1.5px solid #475569",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: 18,
-                fontWeight: 700,
-                margin: 0,
-                color: "#cbd5e1",
-                letterSpacing: 0.5,
-              }}
-            >
+          <section className="relative bg-muted border border-border rounded-xl p-6 shadow-md">
+            <h3 className="text-lg font-bold text-foreground mb-2">
               JWT Signature Verification{" "}
-              <span style={{ fontWeight: 400, fontSize: 14 }}>(Optional)</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                (Optional)
+              </span>
             </h3>
             <Button
               variant="ghost"
               size="sm"
-              style={{
-                position: "absolute",
-                top: 16,
-                right: 16,
-                cursor: "pointer",
-              }}
+              className="absolute top-4 right-4"
               onClick={() => {
                 navigator.clipboard.writeText(result ? result.signature : "");
                 toast.success("Signature wurde in die Zwischenablage kopiert!");
@@ -300,14 +196,10 @@ const JWTDecoder: React.FC = () => {
             >
               Copy
             </Button>
-            <SyntaxHighlighter
-              language="text"
-              style={vscDarkPlus}
-              customStyle={{ borderRadius: 6, fontSize: 15, marginTop: 24 }}
-            >
+            <div className="bg-background rounded-lg p-3 mt-4 overflow-x-auto text-[15px] font-mono border border-border">
               {result ? result.signature : ""}
-            </SyntaxHighlighter>
-            <div style={{ color: "#cbd5e1", fontSize: 14, marginTop: 8 }}>
+            </div>
+            <div className="text-muted-foreground text-sm mt-2">
               Hier könnte eine Signature-Prüfung erfolgen, wenn ein Schlüssel
               angegeben wird.
             </div>
@@ -315,20 +207,9 @@ const JWTDecoder: React.FC = () => {
 
           {/* Token Info unter den Sections */}
           {result && result.payload && (
-            <div
-              style={{
-                marginTop: 24,
-                background:
-                  "linear-gradient(90deg, #1e293b 60%, #10b98122 100%)",
-                padding: 16,
-                borderRadius: 8,
-                boxShadow: "0 1px 6px #10b98144",
-                border: "1.5px solid #10b98155",
-                color: "#e0f2fe",
-              }}
-            >
-              <b style={{ fontSize: 16, color: "#6ee7b7" }}>Token Info:</b>
-              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 15 }}>
+            <div className="mt-6 bg-muted p-4 rounded-lg shadow border border-border text-foreground">
+              <b className="text-base">Token Info:</b>
+              <ul className="pl-5 text-[15px]">
                 {result.payload.exp && (
                   <li>
                     <b>Läuft ab am:</b>{" "}
@@ -336,9 +217,9 @@ const JWTDecoder: React.FC = () => {
                     <br />
                     <b>Status:</b>{" "}
                     {Date.now() < result.payload.exp * 1000 ? (
-                      <span style={{ color: "green" }}>✅ Gültig</span>
+                      <span className="text-green-400">✅ Gültig</span>
                     ) : (
-                      <span style={{ color: "red" }}>❌ Abgelaufen</span>
+                      <span className="text-red-400">❌ Abgelaufen</span>
                     )}
                   </li>
                 )}
@@ -356,5 +237,68 @@ const JWTDecoder: React.FC = () => {
     </div>
   );
 };
+
+function JsonWithTooltips({ data, colorKey }: { data: any; colorKey: string }) {
+  const json = JSON.stringify(data, null, 2);
+  const keyRegex = /^\s*"([^"]+)":/;
+  return (
+    <code>
+      {json.split("\n").map((line, i) => {
+        const match = keyRegex.exec(line);
+        if (match) {
+          const key: string = match[1] ?? "";
+          const before = line.slice(0, line.indexOf('"'));
+          const after = line.slice(
+            line.indexOf('"', line.indexOf('"') + 1) + 1,
+          );
+          return (
+            <div key={i} style={{ whiteSpace: "pre" }}>
+              {before}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className={`${colorKey ?? ""} font-semibold cursor-pointer`}
+                    style={{
+                      cursor: tooltipTextForKey(key) ? "help" : "default",
+                    }}
+                  >{`"${key}"`}</span>
+                </TooltipTrigger>
+                {tooltipTextForKey(key) ? (
+                  <TooltipContent>
+                    {tooltipTextForKey(key) || ""}
+                  </TooltipContent>
+                ) : null}
+              </Tooltip>
+              {after}
+            </div>
+          );
+        } else {
+          // Highlight values: numbers, strings, booleans, null
+          let highlighted = line
+            .replace(
+              /(: )("[^"]*")/g,
+              '$1<span class="text-green-400">$2</span>',
+            ) // strings
+            .replace(
+              /(: )(\d+(?:\.\d+)?)/g,
+              '$1<span class="text-orange-400">$2</span>',
+            ) // numbers
+            .replace(
+              /(: )(true|false)/g,
+              '$1<span class="text-purple-400">$2</span>',
+            ) // booleans
+            .replace(/(: )(null)/g, '$1<span class="text-gray-400">$2</span>'); // null
+          return (
+            <div
+              key={i}
+              style={{ whiteSpace: "pre" }}
+              dangerouslySetInnerHTML={{ __html: highlighted }}
+            />
+          );
+        }
+      })}
+    </code>
+  );
+}
 
 export default JWTDecoder;
