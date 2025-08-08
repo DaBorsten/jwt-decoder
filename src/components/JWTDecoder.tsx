@@ -89,121 +89,125 @@ const JWTDecoder: React.FC = () => {
   }, [input]);
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-background dark px-2 py-8">
-      <div className="w-full max-w-2xl bg-card rounded-2xl shadow-2xl p-8 flex flex-col gap-8 border border-border">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-wide mb-2 text-center">
-          JWT Decoder
-        </h2>
-        <div className="flex flex-col gap-4">
-          <label
-            htmlFor="jwt-input"
-            className="text-base font-semibold text-primary mb-1"
-          >
-            JWT Token
-          </label>
-          <div>
-            <textarea
-              id="jwt-input"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              rows={8}
-              placeholder="JWT Token hier eingeben..."
-              className="w-full min-h-[120px] bg-background border-2 border-dashed border-border rounded-lg p-4 text-base text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary transition resize-vertical"
-              style={{ boxShadow: "0 1px 4px #0002" }}
-            />
-          </div>
+    <div className="w-full h-screen min-h-screen flex items-stretch justify-center bg-background dark px-2 py-8">
+      <div className="w-full max-w-6xl bg-card rounded-2xl shadow-2xl p-8 flex flex-row gap-8 border border-border h-full">
+        {/* Linke Spalte: Eingabe */}
+        <div className="flex flex-col w-[40%] h-full">
+          <h3 className="text-lg font-bold text-primary mb-2">JWT Token</h3>
+          <textarea
+            id="jwt-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="JWT Token hier eingeben..."
+            className="w-full flex-1 min-h-0 bg-background border-2 border-dashed border-border rounded-lg p-4 text-base text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary transition resize-none"
+            style={{ boxShadow: "0 1px 4px #0002", height: "100%" }}
+          />
           {error && (
             <div className="text-destructive font-semibold mt-2">
               <b>Fehler:</b> {error}
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-6">
+        {/* Rechte Spalte: Ergebnisse */}
+        <div className="flex flex-col gap-6 w-[60%] h-full overflow-y-auto">
           {/* Decoded Header Section */}
-          <section className="relative bg-muted border border-border rounded-xl p-6 shadow-md">
+          <div className="flex flex-col mb-2">
             <h3 className="text-lg font-bold text-primary mb-2">
               Decoded Header
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-4 right-4"
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  result ? JSON.stringify(result.header, null, 2) : "",
-                );
-                toast.success("Header wurde in die Zwischenablage kopiert!");
-              }}
-            >
-              Copy
-            </Button>
-            <div className="bg-background rounded-lg p-3 mt-4 overflow-x-auto text-[15px] font-mono border border-border">
-              {result && result.header ? (
-                <JsonWithTooltips
-                  data={result.header}
-                  colorKey="text-blue-400"
-                />
-              ) : (
-                <span className="text-muted-foreground"> </span>
-              )}
-            </div>
-          </section>
+            <section className="relative bg-background border border-border rounded-xl shadow-md overflow-hidden">
+              <div className="border-b border-border p-2 flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      result ? JSON.stringify(result.header, null, 2) : "",
+                    );
+                    toast.success(
+                      "Header wurde in die Zwischenablage kopiert!",
+                    );
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+              <div className="bg-background m-4 overflow-x-auto text-[15px] font-mono">
+                {result && result.header ? (
+                  <JsonWithTooltips
+                    data={result.header}
+                    colorKey="text-blue-400"
+                  />
+                ) : (
+                  <span className="text-muted-foreground"> </span>
+                )}
+              </div>
+            </section>
+          </div>
 
           {/* Decoded Payload Section */}
-          <section className="relative bg-muted border border-border rounded-xl p-6 shadow-md">
+          <div className="flex flex-col mb-2">
             <h3 className="text-lg font-bold mb-2">Decoded Payload</h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-4 right-4"
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  result ? JSON.stringify(result.payload, null, 2) : "",
-                );
-                toast.success("Payload wurde in die Zwischenablage kopiert!");
-              }}
-            >
-              Copy
-            </Button>
-            <div className="bg-background rounded-lg p-3 mt-4 overflow-x-auto text-[15px] font-mono border border-border">
-              {result && result.payload ? (
-                <JsonWithTooltips
-                  data={result.payload}
-                  colorKey="text-blue-400"
-                />
-              ) : (
-                <span className="text-muted-foreground"> </span>
-              )}
-            </div>
-          </section>
+            <section className="relative bg-background border border-border rounded-xl shadow-md overflow-hidden">
+              <div className="border-b border-border p-2 flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      result ? JSON.stringify(result.payload, null, 2) : "",
+                    );
+                    toast.success(
+                      "Payload wurde in die Zwischenablage kopiert!",
+                    );
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+              <div className="bg-background m-4 overflow-x-auto text-[15px] font-mono shadow-md">
+                {result && result.payload ? (
+                  <JsonWithTooltips
+                    data={result.payload}
+                    colorKey="text-blue-400"
+                  />
+                ) : (
+                  <span className="text-muted-foreground"> </span>
+                )}
+              </div>
+            </section>
+          </div>
 
           {/* JWT Signature Verification (Optional) Section */}
-          <section className="relative bg-muted border border-border rounded-xl p-6 shadow-md">
+          <div className="flex flex-col mb-2">
             <h3 className="text-lg font-bold text-foreground mb-2">
               JWT Signature Verification{" "}
               <span className="font-normal text-sm text-muted-foreground">
                 (Optional)
               </span>
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-4 right-4"
-              onClick={() => {
-                navigator.clipboard.writeText(result ? result.signature : "");
-                toast.success("Signature wurde in die Zwischenablage kopiert!");
-              }}
-            >
-              Copy
-            </Button>
-            <div className="bg-background rounded-lg p-3 mt-4 overflow-x-auto text-[15px] font-mono border border-border">
-              {result ? result.signature : ""}
-            </div>
-            <div className="text-muted-foreground text-sm mt-2">
-              Hier könnte eine Signature-Prüfung erfolgen, wenn ein Schlüssel
-              angegeben wird.
-            </div>
-          </section>
+            <section className="relative bg-background border border-border rounded-xl shadow-md overflow-hidden">
+              <div className="border-b border-border p-2 flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      result ? result.signature : "",
+                    );
+                    toast.success(
+                      "Signature wurde in die Zwischenablage kopiert!",
+                    );
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+              <div className="bg-background m-4 overflow-x-auto text-[15px] font-mono shadow-md">
+                {result ? result.signature : ""}
+              </div>
+            </section>
+          </div>
 
           {/* Token Info unter den Sections */}
           {result && result.payload && (
@@ -252,7 +256,15 @@ function JsonWithTooltips({ data, colorKey }: { data: any; colorKey: string }) {
             line.indexOf('"', line.indexOf('"') + 1) + 1,
           );
           return (
-            <div key={i} style={{ whiteSpace: "pre" }}>
+            <div
+              key={i}
+              style={{ whiteSpace: "pre" }}
+              className={`
+                transition-colors
+                hover:text-blue-200
+                hover:bg-blue-950/40
+              `}
+            >
               {before}
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -293,6 +305,11 @@ function JsonWithTooltips({ data, colorKey }: { data: any; colorKey: string }) {
               key={i}
               style={{ whiteSpace: "pre" }}
               dangerouslySetInnerHTML={{ __html: highlighted }}
+              className={`
+                transition-colors
+                hover:text-blue-200
+                hover:bg-blue-950/40
+              `}
             />
           );
         }
