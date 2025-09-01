@@ -28,6 +28,69 @@ const JWTDecoder: React.FC = () => {
   }
   const [error, setError] = useState<string | null>(null);
 
+  // Refs & Highlight-Funktionen für das JWT Textarea Overlay
+  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
+  const preRef = React.useRef<HTMLPreElement | null>(null);
+
+  function escapeHtml(s: string) {
+    return s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function highlightJWT(str: string) {
+    if (!str) return "";
+    // Zeichenweise parsen, damit aufeinanderfolgende Punkte korrekt (.. => ..) dargestellt werden
+    // und keine künstlichen &nbsp; Segmente entstehen, die den Caret verschieben.
+    let segmentIndex = 0; // 0 = header, 1 = payload, 2 = signature
+    let currentClass = "";
+    let buffer = "";
+    const out: string[] = [];
+
+    function colorFor(idx: number) {
+      if (idx === 0) return "text-green-400";
+      if (idx === 2) return "text-blue-400";
+      return "text-foreground"; // default (weiß)
+    }
+
+    function flush() {
+      if (!buffer) return;
+      out.push(`<span class="${currentClass}">${buffer}</span>`);
+      buffer = "";
+    }
+
+    for (let i = 0; i < str.length; i++) {
+      const ch: string = str[i] ?? "";
+      if (ch === ".") {
+        // Punkt beenden aktuellen Buffer und selbstständig rot darstellen
+        flush();
+        out.push('<span class="text-red-500">.</span>');
+        segmentIndex += 1; // nächstes Segment beginnt
+        currentClass = ""; // Force Neufindung der Farbe danach
+        continue;
+      }
+      const neededClass = colorFor(segmentIndex);
+      if (neededClass !== currentClass) {
+        flush();
+        currentClass = neededClass;
+      }
+      // Escape & HTML-safe + Spaces in &nbsp; umwandeln zur Ausrichtung
+      let escaped = escapeHtml(ch);
+      if (ch === " ") escaped = "&nbsp;"; // Space sichtbar erhalten
+      buffer += escaped;
+    }
+    flush();
+    return out.join("");
+  }
+
+  function syncScroll() {
+    if (!textareaRef.current || !preRef.current) return;
+    preRef.current.scrollTop = textareaRef.current.scrollTop;
+    preRef.current.scrollLeft = textareaRef.current.scrollLeft;
+  }
+
   React.useEffect(() => {
     if (!input.trim()) {
       setResult(null);
@@ -51,14 +114,32 @@ const JWTDecoder: React.FC = () => {
         <div className="flex flex-col gap-6 w-[40%] h-full">
           <div className="flex flex-col mb-2 h-full">
             <h3 className="text-lg font-bold text-primary mb-2">JWT Token</h3>
-            <textarea
-              id="jwt-input"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="JWT Token hier eingeben..."
-              className="w-full flex-1 min-h-0 bg-background border-2 border-dashed border-border rounded-lg p-4 text-base text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary transition resize-none"
-              style={{ boxShadow: "0 1px 4px #0002", height: "100%" }}
-            />
+            {/* Overlay Highlight Textarea */}
+            <div className="relative flex-1 min-h-0 font-mono text-base">
+              <pre
+                ref={preRef}
+                aria-hidden="true"
+                className="absolute inset-0 m-0 overflow-auto pointer-events-none whitespace-pre-wrap break-words rounded-lg p-4 bg-background border-2 border-dashed border-border"
+                style={{ boxShadow: "0 1px 4px #0002" }}
+                dangerouslySetInnerHTML={{
+                  __html: input
+                    ? highlightJWT(input)
+                    : `<span class="text-muted-foreground">JWT Token hier eingeben...</span>`,
+                }}
+              />
+              <textarea
+                ref={textareaRef}
+                id="jwt-input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onScroll={syncScroll}
+                placeholder=""
+                spellCheck={false}
+                className="absolute inset-0 w-full h-full resize-none bg-transparent border-2 border-dashed border-border rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-primary text-transparent caret-foreground selection:bg-primary/30"
+                style={{ boxShadow: "0 1px 4px #0002" }}
+                aria-label="JWT Token"
+              />
+            </div>
             {error && (
               <div className="text-destructive font-semibold mt-2">
                 <b>Fehler:</b> {error}
@@ -121,9 +202,7 @@ const JWTDecoder: React.FC = () => {
         <div className="flex flex-col gap-6 w-[60%] h-full overflow-y-auto pr-8">
           {/* Decoded Header Section */}
           <div className="flex flex-col mb-2">
-            <h3 className="text-lg font-bold text-primary mb-2">
-              Decoded Header
-            </h3>
+            <h3 className="text-lg font-bold text-primary mb-2">Decoded Header</h3>
             <CopyBlock
               text={
                 isDecodedJWT(result)
@@ -134,10 +213,7 @@ const JWTDecoder: React.FC = () => {
               className=""
             >
               {isDecodedJWT(result) && result.header ? (
-                <JsonWithTooltips
-                  data={result.header}
-                  colorKey="text-blue-400"
-                />
+                <JsonWithTooltips data={result.header} colorKey="text-blue-400" />
               ) : (
                 <span className="text-muted-foreground"> </span>
               )}
@@ -157,10 +233,7 @@ const JWTDecoder: React.FC = () => {
               className=""
             >
               {isDecodedJWT(result) && result.payload ? (
-                <JsonWithTooltips
-                  data={result.payload}
-                  colorKey="text-blue-400"
-                />
+                <JsonWithTooltips data={result.payload} colorKey="text-blue-400" />
               ) : (
                 <span className="text-muted-foreground"> </span>
               )}
