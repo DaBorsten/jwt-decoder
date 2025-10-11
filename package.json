@@ -1,5 +1,5 @@
 {
-  "name": "bun-react-template",
+  "name": "jwt-decoder",
   "version": "0.1.0",
   "private": true,
   "type": "module",
