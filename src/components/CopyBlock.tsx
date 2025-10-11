@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface CopyBlockProps {
   text: string;
@@ -11,10 +12,12 @@ interface CopyBlockProps {
 
 const CopyBlock: React.FC<CopyBlockProps> = ({
   text,
-  copyToast = "In die Zwischenablage kopiert!",
+  copyToast,
   className = "",
   children,
 }) => {
+  const { t } = useTranslation();
+  const toastText = copyToast ?? t("common.copied");
   return (
     <section
       className={`relative bg-background border border-border rounded-xl shadow-md overflow-hidden transition-colors group ${className}`}
@@ -26,10 +29,10 @@ const CopyBlock: React.FC<CopyBlockProps> = ({
           className="transition-colors hover:border-gray-500 hover:text-primary cursor-pointer"
           onClick={() => {
             navigator.clipboard.writeText(text);
-            toast.success(copyToast);
+            toast.success(toastText);
           }}
         >
-          Copy
+          {t("common.copy")}
         </Button>
       </div>
       <pre className="bg-background m-4 overflow-x-auto text-[15px] font-mono shadow-md min-h-[80px]">

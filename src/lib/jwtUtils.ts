@@ -8,7 +8,7 @@ export function base64UrlDecode(str: string): string {
         .map(function (c) {
           return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
         })
-        .join("")
+        .join(""),
     );
   } catch {
     return "";
@@ -24,19 +24,19 @@ export function parseJWT(token: string) {
   if (parts.length !== 3) {
     return {
       error:
-        "Ungültiges JWT Format: Muss genau 3 Teile haben (Header.Payload.Signature)",
+        "Invalid JWT format: must have exactly 3 parts (Header.Payload.Signature)",
     };
   }
   const [headerB64, payloadB64, signaturePart] = parts;
   if (!headerB64 || !payloadB64 || !signaturePart) {
-    return { error: "Ungültiges JWT: Fehlende Teile" };
+    return { error: "Invalid JWT: missing parts" };
   }
   let header, payload;
   try {
     header = JSON.parse(base64UrlDecode(headerB64));
     payload = JSON.parse(base64UrlDecode(payloadB64));
   } catch {
-    return { error: "Fehler beim Dekodieren von Header oder Payload" };
+    return { error: "Error decoding header or payload" };
   }
   return { header, payload, signature: signaturePart };
 }

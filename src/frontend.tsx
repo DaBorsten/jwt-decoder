@@ -9,8 +9,25 @@ import React from "react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import i18n from "./i18n"; // initialize i18next
 
 const elem = document.getElementById("root")!;
+// Keep <html lang> in sync with current language
+const setHtmlLang = () => {
+  const html = document.documentElement;
+  if (html) html.setAttribute("lang", i18n.language ?? "en");
+};
+setHtmlLang();
+i18n.on("languageChanged", setHtmlLang);
+
+// Update document title and meta description based on translations
+const setHeadTranslations = () => {
+  document.title = i18n.t("app.title");
+  const meta = document.querySelector('meta[name="description"]');
+  if (meta) meta.setAttribute("content", i18n.t("app.description"));
+};
+setHeadTranslations();
+i18n.on("languageChanged", setHeadTranslations);
 const app = (
   <StrictMode>
     <App />

@@ -5,6 +5,7 @@ import {
   TooltipContent,
 } from "../components/ui/tooltip";
 import { tooltipTextForKey } from "../lib/jwtDescriptions";
+import { useTranslation } from "react-i18next";
 
 interface JsonWithTooltipsProps {
   data: Record<string, unknown>;
@@ -15,6 +16,7 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
   data,
   colorKey,
 }) => {
+  const { t } = useTranslation();
   const json = JSON.stringify(data, null, 2);
   const keyRegex = /^\s*"([^"]+)":/;
   return (
@@ -27,25 +29,25 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
           const after = line.slice(
             line.indexOf('"', line.indexOf('"') + 1) + 1,
           );
-          // Versuchen den Wert hinter dem ersten Doppelpunkt zu erkennen (roh)
+          // Try to detect the raw value after the first colon
           const valueMatch = after.match(/:\s*(.+?)(,)?$/);
           let valuePortion = after;
           let valueNode: React.ReactNode = null;
           if (valueMatch) {
             const rawValue = (valueMatch[1] ?? "").trim();
-            // Prüfen ob reine 10-stellige Zahl
+            // Check whether it's a plain 10-digit number
             if (/^\d{10}$/.test(rawValue)) {
               const num = parseInt(rawValue, 10);
               const date = new Date(num * 1000);
               const locale = date.toLocaleString();
               const iso = date.toISOString();
               const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-              // Ersetze im after-String das erste Auftreten der Zahl durch Platzhalter
+              // Replace the first occurrence of the number in the 'after' string with a placeholder
               const prefix = after.slice(0, after.indexOf(rawValue));
               const suffix = after.slice(
                 after.indexOf(rawValue) + rawValue.length,
               );
-              valuePortion = prefix; // Rest (suffix) wird nach dem Node angefügt
+              valuePortion = prefix; // remainder (suffix) will be appended after the node
               valueNode = (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -63,19 +65,19 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
                   <TooltipContent>
                     <div className="text-sm leading-snug">
                       <div>
-                        <b>Lokale Zeit:</b> {locale}
+                        <b>{t("jwt.local_time")}</b> {locale}
                       </div>
                       <div>
-                        <b>ISO:</b> {iso}
+                        <b>{t("jwt.iso")}</b> {iso}
                       </div>
                       <div>
-                        <b>Zeitzone:</b> {tz}
+                        <b>{t("jwt.timezone")}</b> {tz}
                       </div>
                     </div>
                   </TooltipContent>
                 </Tooltip>
               );
-              // suffix anhängen nach valueNode
+              // append suffix after the value node
               return (
                 <div
                   key={i}
@@ -141,8 +143,8 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
             </div>
           );
         } else {
-          // Werte hervorheben + 10-stellige Unix-Sekunden mit Tooltip
-          // Zerlegen statt alles via replace zu pipen, damit wir Tooltips für einzelne number tokens rendern können.
+          // Highlight values + show tooltips for 10-digit Unix seconds
+          // Split instead of piping everything through replace so we can render tooltips for individual numeric tokens.
           const numberTokenRegex = /(\d{1,})/g;
           const segments: React.ReactNode[] = [];
           let lastIndex = 0;
@@ -183,13 +185,13 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
                   <TooltipContent>
                     <div className="text-sm leading-snug">
                       <div>
-                        <b>Lokale Zeit:</b> {locale}
+                        <b>{t("jwt.local_time")}</b> {locale}
                       </div>
                       <div>
-                        <b>ISO:</b> {iso}
+                        <b>{t("jwt.iso")}</b> {iso}
                       </div>
                       <div>
-                        <b>Zeitzone:</b> {tz}
+                        <b>{t("jwt.timezone")}</b> {tz}
                       </div>
                     </div>
                   </TooltipContent>
@@ -231,7 +233,7 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
   );
 };
 
-// Hilfsfunktion um Strings/Booleans/Null farbig in Fragmenten zu highlighten
+// Helper to highlight strings/booleans/null in fragments with colors
 function renderValueFragment(fragment: string, key: string): React.ReactNode {
   let formatted = fragment;
   // Strings
