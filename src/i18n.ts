@@ -10,6 +10,10 @@ const resources = {
         title: "JWT Decoder",
         description: "Decode and verify JWT tokens easily.",
       },
+      a11y: {
+        skip_to_main: "Skip to main content",
+        main_region: "Main content",
+      },
       jwtdesc: {
         alg: "Signature or encryption algorithm",
         typ: "Type of the token (usually 'JWT')",
@@ -54,6 +58,10 @@ const resources = {
       app: {
         title: "JWT Decoder",
         description: "JWT-Tokens einfach dekodieren und prüfen.",
+      },
+      a11y: {
+        skip_to_main: "Zum Hauptinhalt springen",
+        main_region: "Hauptinhalt",
       },
       jwtdesc: {
         alg: "Signatur- oder Verschlüsselungsalgorithmus",

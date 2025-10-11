@@ -25,6 +25,8 @@ const setHeadTranslations = () => {
   document.title = i18n.t("app.title");
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute("content", i18n.t("app.description"));
+  const skip = document.querySelector('.skip-link');
+  if (skip) skip.textContent = i18n.t("a11y.skip_to_main");
 };
 setHeadTranslations();
 i18n.on("languageChanged", setHeadTranslations);

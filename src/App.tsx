@@ -10,9 +10,9 @@ export function App() {
   return (
     <>
       <Toaster position="top-center" richColors closeButton />
-      <div className="w-screen h-screen min-h-screen">
+      <main id="main" role="main" tabIndex={-1} className="w-screen h-screen min-h-screen">
         <JWTDecoder />
-      </div>
+      </main>
     </>
   );
 }

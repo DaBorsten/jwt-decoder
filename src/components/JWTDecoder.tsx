@@ -108,11 +108,11 @@ const JWTDecoder: React.FC = () => {
 
   return (
     <div className="w-full h-screen min-h-screen flex items-stretch justify-center bg-background dark px-8 py-8">
-      <div className="w-full  bg-card rounded-2xl shadow-2xl py-8 pl-8 flex flex-row gap-8 border border-border h-full">
+      <div className="w-full  bg-card rounded-2xl shadow-2xl py-8 pl-8 flex flex-row gap-8 border border-border h-full" role="region" aria-label="JWT Decoder">
   {/* Left column: input */}
         <div className="flex flex-col gap-6 w-[50%] h-full">
-          <div className="flex flex-col mb-2 h-full">
-            <h3 className="text-lg font-bold text-primary mb-2">{t("jwt.token")}</h3>
+          <section className="flex flex-col mb-2 h-full" aria-labelledby="jwt-token-label">
+            <h2 id="jwt-token-label" className="text-lg font-bold text-primary mb-2">{t("jwt.token")}</h2>
             {/* Overlay highlight textarea */}
             <div className="relative flex-1 min-h-0 font-mono text-base">
               <pre
@@ -136,15 +136,20 @@ const JWTDecoder: React.FC = () => {
                 spellCheck={false}
                 className="absolute inset-0 w-full h-full resize-none bg-transparent border-2 border-dashed border-border rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-primary text-transparent caret-foreground selection:bg-primary/30"
                 style={{ boxShadow: "0 1px 4px #0002" }}
-                aria-label="JWT Token"
+                aria-labelledby="jwt-token-label"
+                aria-describedby={`jwt-token-help${error ? ' jwt-error' : ''}`}
+                aria-invalid={!!error}
               />
+              <p id="jwt-token-help" className="sr-only">
+                {t("jwt.enter_here")}
+              </p>
             </div>
             {error && (
-              <div className="text-destructive font-semibold mt-2">
+              <div id="jwt-error" className="text-destructive font-semibold mt-2" role="alert" aria-live="assertive">
                 <b>{t("common.error")}:</b> {error}
               </div>
             )}
-          </div>
+          </section>
           {/* Token info below the sections */}
           {isDecodedJWT(result) &&
             result.payload &&
@@ -162,10 +167,11 @@ const JWTDecoder: React.FC = () => {
                 ? "border-red-500"
                 : "border-green-500";
               return (
-                <div className="flex flex-col mb-2">
-                  <h3 className="text-lg font-bold mb-2">{t("jwt.token_info")}</h3>
+                <section className="flex flex-col mb-2" aria-labelledby="token-info-label">
+                  <h2 id="token-info-label" className="text-lg font-bold mb-2">{t("jwt.token_info")}</h2>
                   <div
-                    className={`bg-card p-4 rounded-lg shadow-md border ${borderColor} text-foreground`}
+                    tabIndex={0}
+                    className={`bg-card p-4 rounded-lg shadow-md border ${borderColor} text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
                   >
                     <ul className="text-[15px]">
                       {iat && (
@@ -196,15 +202,15 @@ const JWTDecoder: React.FC = () => {
                       )}
                     </ul>
                   </div>
-                </div>
+                </section>
               );
             })()}
         </div>
   {/* Right column: results */}
-        <div className="flex flex-col gap-6 w-[50%] h-full overflow-y-auto pr-8">
+        <div className="flex flex-col gap-6 w-[50%] h-full overflow-y-auto pr-8" role="region" aria-label="Decoded results">
           {/* Decoded Header Section */}
-          <div className="flex flex-col mb-2">
-            <h3 className="text-lg font-bold text-primary mb-2">{t("jwt.decoded_header")}</h3>
+          <section className="flex flex-col mb-2" aria-labelledby="decoded-header-label">
+            <h2 id="decoded-header-label" className="text-lg font-bold text-primary mb-2">{t("jwt.decoded_header")}</h2>
             <CopyBlock
               text={
                 isDecodedJWT(result)
@@ -213,6 +219,8 @@ const JWTDecoder: React.FC = () => {
               }
               copyToast={t("jwt.header_copied")}
               className=""
+              ariaLabel={t("jwt.decoded_header")}
+              labelledById="decoded-header-label"
             >
               {isDecodedJWT(result) && result.header ? (
                 <JsonWithTooltips
@@ -223,11 +231,11 @@ const JWTDecoder: React.FC = () => {
                 <span className="text-muted-foreground"> </span>
               )}
             </CopyBlock>
-          </div>
+          </section>
 
           {/* Decoded Payload Section */}
-          <div className="flex flex-col mb-2">
-            <h3 className="text-lg font-bold mb-2">{t("jwt.decoded_payload")}</h3>
+          <section className="flex flex-col mb-2" aria-labelledby="decoded-payload-label">
+            <h2 id="decoded-payload-label" className="text-lg font-bold mb-2">{t("jwt.decoded_payload")}</h2>
             <CopyBlock
               text={
                 isDecodedJWT(result)
@@ -236,6 +244,8 @@ const JWTDecoder: React.FC = () => {
               }
               copyToast={t("jwt.payload_copied")}
               className=""
+              ariaLabel={t("jwt.decoded_payload")}
+              labelledById="decoded-payload-label"
             >
               {isDecodedJWT(result) && result.payload ? (
                 <JsonWithTooltips
@@ -246,22 +256,24 @@ const JWTDecoder: React.FC = () => {
                 <span className="text-muted-foreground"> </span>
               )}
             </CopyBlock>
-          </div>
+          </section>
 
           {/* JWT Signature Verification (Optional) Section */}
-          <div className="flex flex-col mb-2">
-            <h3 className="text-lg font-bold text-foreground mb-2">
+          <section className="flex flex-col mb-2" aria-labelledby="signature-verification-label">
+            <h2 id="signature-verification-label" className="text-lg font-bold text-foreground mb-2">
               {t("jwt.signature_verification")} {" "}
               <span className="font-normal text-sm text-muted-foreground">
                 ({t("common.optional")})
               </span>
-            </h3>
+            </h2>
             <CopyBlock
               text={isDecodedJWT(result) ? result.signature : ""}
               copyToast={t("jwt.signature_copied")}
               className=""
+              ariaLabel={t("jwt.signature_verification")}
+              labelledById="signature-verification-label"
             />
-          </div>
+          </section>
         </div>
       </div>
     </div>
