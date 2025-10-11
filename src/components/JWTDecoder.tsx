@@ -17,9 +17,7 @@ const JWTDecoder: React.FC = () => {
     | null;
   const [result, setResult] = useState<JWTResult>(null);
 
-  function isDecodedJWT(
-    r: JWTResult,
-  ): r is {
+  function isDecodedJWT(r: JWTResult): r is {
     header: Record<string, unknown>;
     payload: Record<string, unknown>;
     signature: string;
@@ -108,10 +106,10 @@ const JWTDecoder: React.FC = () => {
   }, [input]);
 
   return (
-    <div className="w-full h-screen min-h-screen flex items-stretch justify-center bg-background dark px-2 py-8">
-      <div className="w-full max-w-6xl bg-card rounded-2xl shadow-2xl py-8 pl-8 flex flex-row gap-8 border border-border h-full">
+    <div className="w-full h-screen min-h-screen flex items-stretch justify-center bg-background dark px-8 py-8">
+      <div className="w-full  bg-card rounded-2xl shadow-2xl py-8 pl-8 flex flex-row gap-8 border border-border h-full">
         {/* Linke Spalte: Eingabe */}
-        <div className="flex flex-col gap-6 w-[40%] h-full">
+        <div className="flex flex-col gap-6 w-[50%] h-full">
           <div className="flex flex-col mb-2 h-full">
             <h3 className="text-lg font-bold text-primary mb-2">JWT Token</h3>
             {/* Overlay Highlight Textarea */}
@@ -169,21 +167,6 @@ const JWTDecoder: React.FC = () => {
                     className={`bg-card p-4 rounded-lg shadow-md border ${borderColor} text-foreground`}
                   >
                     <ul className="text-[15px]">
-                      {exp && (
-                        <li>
-                          <b className="text-primary">Läuft ab am:</b>{" "}
-                          <span className="text-muted-foreground">
-                            {new Date(exp * 1000).toLocaleString()}
-                          </span>
-                          <br />
-                          <b className="text-primary">Status:</b>{" "}
-                          {Date.now() < exp * 1000 ? (
-                            <span className="text-green-400">✅ Gültig</span>
-                          ) : (
-                            <span className="text-red-400">❌ Abgelaufen</span>
-                          )}
-                        </li>
-                      )}
                       {iat && (
                         <li>
                           <b className="text-primary">Ausgestellt am:</b>{" "}
@@ -192,6 +175,26 @@ const JWTDecoder: React.FC = () => {
                           </span>
                         </li>
                       )}
+                      {exp && (
+                        <>
+                          <li>
+                            <b className="text-primary">Status:</b>{" "}
+                            {Date.now() < exp * 1000 ? (
+                              <span className="text-green-400">✅ Gültig</span>
+                            ) : (
+                              <span className="text-red-400">
+                                ❌ Abgelaufen
+                              </span>
+                            )}
+                          </li>
+                          <li>
+                            <b className="text-primary">Läuft ab am:</b>{" "}
+                            <span className="text-muted-foreground">
+                              {new Date(exp * 1000).toLocaleString()}
+                            </span>
+                          </li>
+                        </>
+                      )}
                     </ul>
                   </div>
                 </div>
@@ -199,10 +202,12 @@ const JWTDecoder: React.FC = () => {
             })()}
         </div>
         {/* Rechte Spalte: Ergebnisse */}
-        <div className="flex flex-col gap-6 w-[60%] h-full overflow-y-auto pr-8">
+        <div className="flex flex-col gap-6 w-[50%] h-full overflow-y-auto pr-8">
           {/* Decoded Header Section */}
           <div className="flex flex-col mb-2">
-            <h3 className="text-lg font-bold text-primary mb-2">Decoded Header</h3>
+            <h3 className="text-lg font-bold text-primary mb-2">
+              Decoded Header
+            </h3>
             <CopyBlock
               text={
                 isDecodedJWT(result)
@@ -213,7 +218,10 @@ const JWTDecoder: React.FC = () => {
               className=""
             >
               {isDecodedJWT(result) && result.header ? (
-                <JsonWithTooltips data={result.header} colorKey="text-blue-400" />
+                <JsonWithTooltips
+                  data={result.header}
+                  colorKey="text-blue-400"
+                />
               ) : (
                 <span className="text-muted-foreground"> </span>
               )}
@@ -233,7 +241,10 @@ const JWTDecoder: React.FC = () => {
               className=""
             >
               {isDecodedJWT(result) && result.payload ? (
-                <JsonWithTooltips data={result.payload} colorKey="text-blue-400" />
+                <JsonWithTooltips
+                  data={result.payload}
+                  colorKey="text-blue-400"
+                />
               ) : (
                 <span className="text-muted-foreground"> </span>
               )}
