@@ -152,7 +152,12 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
             const start = m.index;
             const end = start + full.length;
             if (start > lastIndex) {
-              segments.push(renderValueFragment(line.slice(lastIndex, start)));
+              segments.push(
+                renderValueFragment(
+                  line.slice(lastIndex, start),
+                  `fragment-${lastIndex}-${start}`,
+                ),
+              );
             }
             const isTenDigit = /^\d{10}$/.test(full);
             if (isTenDigit) {
@@ -200,7 +205,12 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
             lastIndex = end;
           }
           if (lastIndex < line.length) {
-            segments.push(renderValueFragment(line.slice(lastIndex)));
+            segments.push(
+              renderValueFragment(
+                line.slice(lastIndex),
+                `fragment-${lastIndex}-end`,
+              ),
+            );
           }
           return (
             <div
@@ -222,23 +232,24 @@ const JsonWithTooltips: React.FC<JsonWithTooltipsProps> = ({
 };
 
 // Hilfsfunktion um Strings/Booleans/Null farbig in Fragmenten zu highlighten
-function renderValueFragment(fragment: string): React.ReactNode {
+function renderValueFragment(fragment: string, key: string): React.ReactNode {
+  let formatted = fragment;
   // Strings
-  fragment = fragment.replace(
+  formatted = formatted.replace(
     /(: )("[^"]*")/g,
     '$1<span class="text-green-400">$2</span>',
   );
   // Booleans
-  fragment = fragment.replace(
+  formatted = formatted.replace(
     /(: )(true|false)/g,
     '$1<span class="text-purple-400">$2</span>',
   );
   // null
-  fragment = fragment.replace(
+  formatted = formatted.replace(
     /(: )(null)/g,
     '$1<span class="text-gray-400">$2</span>',
   );
-  return <span dangerouslySetInnerHTML={{ __html: fragment }} />;
+  return <span key={key} dangerouslySetInnerHTML={{ __html: formatted }} />;
 }
 
 export default JsonWithTooltips;
