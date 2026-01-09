@@ -41,17 +41,17 @@ const JWTDecoder: React.FC = () => {
 
   function highlightJWT(str: string) {
     if (!str) return "";
-  // Parse character-by-character so consecutive dots are rendered correctly (.. => ..)
-  // and no artificial &nbsp; segments are created that would shift the caret.
-  let segmentIndex = 0; // 0 = header, 1 = payload, 2 = signature
+    // Parse character-by-character so consecutive dots are rendered correctly (.. => ..)
+    // and no artificial &nbsp; segments are created that would shift the caret.
+    let segmentIndex = 0; // 0 = header, 1 = payload, 2 = signature
     let currentClass = "";
     let buffer = "";
     const out: string[] = [];
 
     function colorFor(idx: number) {
-  if (idx === 0) return "text-green-400";
-  if (idx === 2) return "text-blue-400";
-  return "text-foreground"; // default (white)
+      if (idx === 0) return "text-green-400";
+      if (idx === 2) return "text-blue-400";
+      return "text-foreground"; // default (white)
     }
 
     function flush() {
@@ -63,11 +63,11 @@ const JWTDecoder: React.FC = () => {
     for (let i = 0; i < str.length; i++) {
       const ch: string = str[i] ?? "";
       if (ch === ".") {
-  // Dot: flush current buffer and render the dot in red by itself
+        // Dot: flush current buffer and render the dot in red by itself
         flush();
         out.push('<span class="text-red-500">.</span>');
-  segmentIndex += 1; // next segment begins
-  currentClass = ""; // force recalculation of the color after this
+        segmentIndex += 1; // next segment begins
+        currentClass = ""; // force recalculation of the color after this
         continue;
       }
       const neededClass = colorFor(segmentIndex);
@@ -75,9 +75,9 @@ const JWTDecoder: React.FC = () => {
         flush();
         currentClass = neededClass;
       }
-  // Escape HTML-safe + convert spaces to &nbsp; to preserve alignment
-  let escaped = escapeHtml(ch);
-  if (ch === " ") escaped = "&nbsp;"; // keep spaces visible
+      // Escape HTML-safe + convert spaces to &nbsp; to preserve alignment
+      let escaped = escapeHtml(ch);
+      if (ch === " ") escaped = "&nbsp;"; // keep spaces visible
       buffer += escaped;
     }
     flush();
@@ -108,22 +108,36 @@ const JWTDecoder: React.FC = () => {
 
   return (
     <div className="w-full h-screen min-h-screen flex items-stretch justify-center bg-background dark px-8 py-8">
-      <div className="w-full  bg-card rounded-2xl shadow-2xl py-8 pl-8 flex flex-row gap-8 border border-border h-full" role="region" aria-label="JWT Decoder">
-  {/* Left column: input */}
+      <div
+        className="w-full  bg-card rounded-2xl shadow-2xl py-8 pl-8 flex flex-row gap-8 border border-border h-full"
+        role="region"
+        aria-label="JWT Decoder"
+      >
+        {/* Left column: input */}
         <div className="flex flex-col gap-6 w-[50%] h-full">
-          <section className="flex flex-col mb-2 h-full" aria-labelledby="jwt-token-label">
-            <h2 id="jwt-token-label" className="text-lg font-bold text-primary mb-2">{t("jwt.token")}</h2>
+          <section
+            className="flex flex-col mb-2 h-full"
+            aria-labelledby="jwt-token-label"
+          >
+            <h2
+              id="jwt-token-label"
+              className="text-lg font-bold text-primary mb-2"
+            >
+              {t("jwt.token")}
+            </h2>
             {/* Overlay highlight textarea */}
             <div className="relative flex-1 min-h-0 font-mono text-base">
               <pre
                 ref={preRef}
                 aria-hidden="true"
-                className="absolute inset-0 m-0 overflow-auto pointer-events-none whitespace-pre-wrap break-words rounded-lg p-4 bg-background border-2 border-dashed border-border"
+                className="absolute inset-0 m-0 overflow-auto pointer-events-none whitespace-pre-wrap wrap-break-word rounded-lg p-4 bg-background border-2 border-dashed border-border"
                 style={{ boxShadow: "0 1px 4px #0002" }}
                 dangerouslySetInnerHTML={{
                   __html: input
                     ? highlightJWT(input)
-                    : `<span class="text-muted-foreground">${t("jwt.enter_here")}</span>`,
+                    : `<span class="text-muted-foreground">${t(
+                        "jwt.enter_here",
+                      )}</span>`,
                 }}
               />
               <textarea
@@ -134,10 +148,10 @@ const JWTDecoder: React.FC = () => {
                 onScroll={syncScroll}
                 placeholder=""
                 spellCheck={false}
-                className="absolute inset-0 w-full h-full resize-none bg-transparent border-2 border-dashed border-border rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-primary text-transparent caret-foreground selection:bg-primary/30"
+                className="absolute inset-0 w-full h-full resize-none bg-transparent border-2 border-dashed border-border rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-primary text-transparent caret-foreground"
                 style={{ boxShadow: "0 1px 4px #0002" }}
                 aria-labelledby="jwt-token-label"
-                aria-describedby={`jwt-token-help${error ? ' jwt-error' : ''}`}
+                aria-describedby={`jwt-token-help${error ? " jwt-error" : ""}`}
                 aria-invalid={!!error}
               />
               <p id="jwt-token-help" className="sr-only">
@@ -145,7 +159,12 @@ const JWTDecoder: React.FC = () => {
               </p>
             </div>
             {error && (
-              <div id="jwt-error" className="text-destructive font-semibold mt-2" role="alert" aria-live="assertive">
+              <div
+                id="jwt-error"
+                className="text-destructive font-semibold mt-2"
+                role="alert"
+                aria-live="assertive"
+              >
                 <b>{t("common.error")}:</b> {error}
               </div>
             )}
@@ -167,8 +186,13 @@ const JWTDecoder: React.FC = () => {
                 ? "border-red-500"
                 : "border-green-500";
               return (
-                <section className="flex flex-col mb-2" aria-labelledby="token-info-label">
-                  <h2 id="token-info-label" className="text-lg font-bold mb-2">{t("jwt.token_info")}</h2>
+                <section
+                  className="flex flex-col mb-2"
+                  aria-labelledby="token-info-label"
+                >
+                  <h2 id="token-info-label" className="text-lg font-bold mb-2">
+                    {t("jwt.token_info")}
+                  </h2>
                   <div
                     tabIndex={0}
                     className={`bg-card p-4 rounded-lg shadow-md border ${borderColor} text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
@@ -187,13 +211,19 @@ const JWTDecoder: React.FC = () => {
                           <li>
                             <b className="text-primary">{t("jwt.status")}</b>{" "}
                             {Date.now() < exp * 1000 ? (
-                              <span className="text-green-400">{t("common.valid")}</span>
+                              <span className="text-green-400">
+                                {t("common.valid")}
+                              </span>
                             ) : (
-                              <span className="text-red-400">{t("common.expired")}</span>
+                              <span className="text-red-400">
+                                {t("common.expired")}
+                              </span>
                             )}
                           </li>
                           <li>
-                            <b className="text-primary">{t("jwt.expires_at")}</b>{" "}
+                            <b className="text-primary">
+                              {t("jwt.expires_at")}
+                            </b>{" "}
                             <span className="text-muted-foreground">
                               {new Date(exp * 1000).toLocaleString()}
                             </span>
@@ -206,11 +236,23 @@ const JWTDecoder: React.FC = () => {
               );
             })()}
         </div>
-  {/* Right column: results */}
-        <div className="flex flex-col gap-6 w-[50%] h-full overflow-y-auto pr-8" role="region" aria-label="Decoded results">
+        {/* Right column: results */}
+        <div
+          className="flex flex-col gap-6 w-[50%] h-full overflow-y-auto pr-8"
+          role="region"
+          aria-label="Decoded results"
+        >
           {/* Decoded Header Section */}
-          <section className="flex flex-col mb-2" aria-labelledby="decoded-header-label">
-            <h2 id="decoded-header-label" className="text-lg font-bold text-primary mb-2">{t("jwt.decoded_header")}</h2>
+          <section
+            className="flex flex-col mb-2"
+            aria-labelledby="decoded-header-label"
+          >
+            <h2
+              id="decoded-header-label"
+              className="text-lg font-bold text-primary mb-2"
+            >
+              {t("jwt.decoded_header")}
+            </h2>
             <CopyBlock
               text={
                 isDecodedJWT(result)
@@ -234,8 +276,13 @@ const JWTDecoder: React.FC = () => {
           </section>
 
           {/* Decoded Payload Section */}
-          <section className="flex flex-col mb-2" aria-labelledby="decoded-payload-label">
-            <h2 id="decoded-payload-label" className="text-lg font-bold mb-2">{t("jwt.decoded_payload")}</h2>
+          <section
+            className="flex flex-col mb-2"
+            aria-labelledby="decoded-payload-label"
+          >
+            <h2 id="decoded-payload-label" className="text-lg font-bold mb-2">
+              {t("jwt.decoded_payload")}
+            </h2>
             <CopyBlock
               text={
                 isDecodedJWT(result)
@@ -259,9 +306,15 @@ const JWTDecoder: React.FC = () => {
           </section>
 
           {/* JWT Signature Verification (Optional) Section */}
-          <section className="flex flex-col mb-2" aria-labelledby="signature-verification-label">
-            <h2 id="signature-verification-label" className="text-lg font-bold text-foreground mb-2">
-              {t("jwt.signature_verification")} {" "}
+          <section
+            className="flex flex-col mb-2"
+            aria-labelledby="signature-verification-label"
+          >
+            <h2
+              id="signature-verification-label"
+              className="text-lg font-bold text-foreground mb-2"
+            >
+              {t("jwt.signature_verification")}{" "}
               <span className="font-normal text-sm text-muted-foreground">
                 ({t("common.optional")})
               </span>

@@ -39,31 +39,37 @@ const CopyBlock: React.FC<CopyBlockProps> = ({
             navigator.clipboard.writeText(text);
             toast.success(toastText);
           }}
-          aria-label={ariaLabel ? `${t("common.copy")} ${ariaLabel}` : t("common.copy")}
+          aria-label={
+            ariaLabel ? `${t("common.copy")} ${ariaLabel}` : t("common.copy")
+          }
         >
           {t("common.copy")}
         </Button>
       </div>
       <pre
-        className="bg-background m-4 overflow-x-auto text-[15px] font-mono shadow-md min-h-[80px] focus:outline-none focus:ring-2 focus:ring-primary"
+        className="bg-background m-4 overflow-x-auto text-[15px] font-mono shadow-md min-h-20 focus:outline-none focus:ring-2 focus:ring-primary"
         tabIndex={0}
         aria-labelledby={labelledById}
         aria-describedby={srId}
       >
-        {children
-          ? children
-          : text.split("\n").map((line, idx) => (
-              <div
-                key={idx}
-                className={`
-                transition-colors
-                hover:text-blue-200
-                hover:bg-blue-950/40
-              `}
-              >
-                {line || "\u00A0"}
-              </div>
-            ))}
+        {children ? (
+          children
+        ) : text ? (
+          text.split("\n").map((line, idx) => (
+            <div
+              key={idx}
+              className={`
+                  transition-colors
+                  hover:text-blue-200
+                  hover:bg-blue-950/40
+                `}
+            >
+              {line || "\u00A0"}
+            </div>
+          ))
+        ) : (
+          <span className="text-muted-foreground"> </span>
+        )}
       </pre>
       {/* Screen-reader accessible plain text content used by aria-describedby */}
       <div id={srId} className="sr-only" aria-hidden={false}>
