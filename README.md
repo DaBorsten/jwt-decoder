@@ -1,5 +1,7 @@
 # JWT Decoder
 
+![Screenshot of running application in the browser](/JWT-Decoder.png)
+
 A fast, client-side JWT inspector built with Bun and React. Paste a JSON Web Token to view and copy its header and payload. The interface is localized and automatically uses your browser’s language (English or German).
 
 ## Features
